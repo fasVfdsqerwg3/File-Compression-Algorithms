@@ -1,0 +1,44 @@
+# Huffman coding implementation
+
+from heapq import heappop, heappush
+
+def build_frequency_table(data):
+    frequency_table = {}
+    for character in data:
+        if character in frequency_table:
+            frequency_table[character] += 1
+        else:
+            frequency_table[character] = 1
+    return frequency_table
+
+def build_huffman_tree(frequency_table):
+    heap = [[weight, [character, ""]] for character, weight in frequency_table.items()]
+    while len(heap) > 1:
+        lo = heappop(heap)
+        hi = heappop(heap)
+        for pair in lo[1:]:
+            pair[1] = '0' + pair[1]
+        for pair in hi[1:]:
+            pair[1] = '1' + pair[1]
+        heappush(heap, [lo[0] + hi[0]] + lo[1:] + hi[1:])
+    return heap[0]
+
+def build_huffman_code(huffman_tree):
+    huffman_code = {}
+    for character, code in huffman_tree[1:]:
+        huffman_code[character] = code
+    return huffman_code
+
+def compress(data, huffman_code):
+    compressed_data = ""
+    for character in data:
+        compressed_data += huffman_code[character]
+    return compressed_data
+
+# Test the Huffman coding algorithm
+data = "Hello, world!"
+frequency_table = build_frequency_table(data)
+huffman_tree = build_huffman_tree(frequency_table)
+huffman_code = build_huffman_code(huffman_tree)
+compressed_data = compress(data, huffman_code)
+print("Compressed data:", compressed_data)
